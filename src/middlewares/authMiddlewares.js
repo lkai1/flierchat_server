@@ -3,7 +3,7 @@ import env_vars from "../config/environment_variables.js"
 
 export const verifyJWTMiddleware = async (request, response, next) => {
     try {
-        const token = request.headers.authorization
+        const token = request.cookies.auth_token
         if (!token) return response.status(401).send("Access denied!")
 
         try {

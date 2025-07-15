@@ -52,15 +52,14 @@ export const loginController = async (request, response) => {
       .status(200)
       .send("User logged in.")
 
-  } catch (_error) {
+  } catch {
     response.status(500).send("Something went wrong! Try again later.")
   }
 }
 
-export const verifyLoginController = async (_request, response) => {
+export const verifyLoginController = async (request, response) => {
   try {
-    const token = req.cookies.auth_token;
-
+    const token = request.cookies.auth_token;
     if (!token) return response.status(401).send("Access denied!")
 
     try {

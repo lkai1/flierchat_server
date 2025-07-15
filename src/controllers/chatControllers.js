@@ -63,7 +63,7 @@ export const createGroupChatController = async (request, response) => {
         if (!validateCreateGroupChatParams(request.body)) return response.status(400).send("Invalid parameters!")
 
         const { chatName } = request.body
-        const token = request.headers.authorization
+        const token = request.cookies.auth_token
 
         const user = await getUserFromJWTService(token)
 
@@ -77,7 +77,7 @@ export const createGroupChatController = async (request, response) => {
         await updateChatLastOpenedByUserService(user.id, chatId)
 
         response.status(201).json(chatId)
-    } catch (_error) {
+    } catch {
         response.status(500).send("Something went wrong! Try again later.")
     }
 }
@@ -153,7 +153,7 @@ export const removeChatParticipantController = async (request, response) => {
 export const getUserChatsController = async (request, response) => {
     try {
 
-        const token = request.headers.authorization
+        const token = request.cookies.auth_token
         const user = await getUserFromJWTService(token)
 
         if (!user) return response.status(404).send("User not found.")
@@ -207,7 +207,7 @@ export const getUnreadMessagesInChatController = async (request, response) => {
 
         const lastOpened = await getChatLastOpenedByUserService(chatId, user.id)
         const unreadMessagesAmount = await getUnreadMessagesAmountInChatService(chatId, lastOpened)
-        
+
         response.status(200).json(unreadMessagesAmount)
 
     } catch (_error) {
