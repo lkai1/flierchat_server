@@ -1,7 +1,7 @@
 import { Server, Socket } from "socket.io";
-import { getUserIsChatParticipantService, getChatFromIdService, getChatWithParticipantIdsFromIdService } from "../services/chatServices.ts";
-import { getUserFromIdService, getUserFromJWTService } from "../services/userServices.ts";
-import { emitOnlineUsersInUserChats } from "./user.ts";
+import { getUserIsChatParticipantService, getChatFromIdService, getChatWithParticipantIdsFromIdService } from "../services/chatServices";
+import { getUserFromIdService, getUserFromJWTService } from "../services/userServices";
+import { emitOnlineUsersInUserChats } from "./user";
 
 export const initChat = (socket: Socket, io: Server): void => {
     socket.on("selectChat", async ({ chatId }: { chatId: string }) => {

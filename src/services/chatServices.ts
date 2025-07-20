@@ -1,6 +1,6 @@
-import db from "../database/db.ts";
+import db from "../database/db";
 import { Op, where, col } from "sequelize";
-import { UserModel, ChatParticipantModel, ChatModel, ChatWithParticipants, ChatWithParticipantIds } from "../types.ts";
+import { UserModel, ChatParticipantModel, ChatModel, ChatWithParticipants, ChatWithParticipantIds } from "../types";
 
 export const createPrivateChatService = async (user: UserModel, participant: UserModel): Promise<string> => {
     const chat = await user.createUserChat({

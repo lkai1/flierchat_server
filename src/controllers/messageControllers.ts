@@ -1,7 +1,7 @@
-import { getUserFromJWTService } from "../services/userServices.ts";
-import { validateCreateMessageParams, validateGetChatMessagesParams, validateDeleteAllUserMessagesFromChatParams, validateDeleteUserMessageParams } from "../utils/validation/messageValidation.ts";
-import { getChatFromIdService, getUserIsChatParticipantService } from "../services/chatServices.ts";
-import { createMessageService, deleteAllUserMessagesFromChatService, deleteUserMessageService, getMessageFromIdService, getMessagesFromChatService } from "../services/messageServices.ts";
+import { getUserFromJWTService } from "../services/userServices";
+import { validateCreateMessageParams, validateGetChatMessagesParams, validateDeleteAllUserMessagesFromChatParams, validateDeleteUserMessageParams } from "../utils/validation/messageValidation";
+import { getChatFromIdService, getUserIsChatParticipantService } from "../services/chatServices";
+import { createMessageService, deleteAllUserMessagesFromChatService, deleteUserMessageService, getMessageFromIdService, getMessagesFromChatService } from "../services/messageServices";
 import { Request, Response } from "express";
 
 export const createMessageController = async (request: Request<object, object, { chatId: string, message: string }>, response: Response): Promise<void> => {

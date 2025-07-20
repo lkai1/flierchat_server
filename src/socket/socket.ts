@@ -1,10 +1,10 @@
 import { Server, Socket } from "socket.io";
-import { initMessage } from "./message.ts";
-import { initChat } from "./chat.ts";
+import { initMessage } from "./message";
+import { initChat } from "./chat";
 import jwt from "jsonwebtoken";
-import env_vars from "../config/environment_variables.ts";
-import { getUserFromJWTService } from "../services/userServices.ts";
-import { initUser, emitUserConnected, emitUserDisconnected } from "./user.ts";
+import env_vars from "../config/environment_variables";
+import { getUserFromJWTService } from "../services/userServices";
+import { initUser, emitUserConnected, emitUserDisconnected } from "./user";
 import { Server as HTTPServer } from "http";
 import cookie from "cookie";
 

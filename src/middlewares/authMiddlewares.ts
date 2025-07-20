@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import env_vars from "../config/environment_variables.ts";
+import env_vars from "../config/environment_variables";
 import { NextFunction, Request, Response } from "express";
 
 export const verifyJWTMiddleware = (request: Request, response: Response, next: NextFunction): void => {

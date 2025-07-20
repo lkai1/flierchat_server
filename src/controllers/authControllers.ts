@@ -1,10 +1,10 @@
 import bcrypt from "bcryptjs";
-import db from '../database/db.ts';
+import db from '../database/db';
 import jwt from "jsonwebtoken";
-import env_vars from "../config/environment_variables.ts";
-import { validateRegisterParams, validateLoginParams } from "../utils/validation/authValidation.ts";
-import createPasswordHash from "../utils/createPasswordHash.ts";
-import { createUserService, getUsernameExistsService } from "../services/userServices.ts";
+import env_vars from "../config/environment_variables";
+import { validateRegisterParams, validateLoginParams } from "../utils/validation/authValidation";
+import createPasswordHash from "../utils/createPasswordHash";
+import { createUserService, getUsernameExistsService } from "../services/userServices";
 import { Request, Response } from "express";
 
 export const registerController = async (request: Request<object, object, { username: string, password: string, password2: string }>, response: Response): Promise<void> => {

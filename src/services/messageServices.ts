@@ -1,5 +1,5 @@
-import db from "../database/db.ts";
-import { ChatModel, MessageModel, MessageWithCreator } from "../types.ts";
+import db from "../database/db";
+import { ChatModel, MessageModel, MessageWithCreator } from "../types";
 
 export const createMessageService = async (creatorId: string, chatId: string, value: string): Promise<MessageModel> => {
     const message = await db.messages.create({

@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { getUserInfoFromJWTController, deleteUserController } from "../controllers/userControllers.ts";
-import { verifyJWTMiddleware } from "../middlewares/authMiddlewares.ts";
+import { getUserInfoFromJWTController, deleteUserController } from "../controllers/userControllers";
+import { verifyJWTMiddleware } from "../middlewares/authMiddlewares";
 
 const router = Router();
 

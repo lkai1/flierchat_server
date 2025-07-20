@@ -1,7 +1,7 @@
-import db from "../database/db.ts";
+import db from "../database/db";
 import jwt from "jsonwebtoken";
-import { deleteChatService, getChatsCreatedByUserService } from "./chatServices.ts";
-import { UserModel } from "../types.ts";
+import { deleteChatService, getChatsCreatedByUserService } from "./chatServices";
+import { UserModel } from "../types";
 
 export const getUserFromJWTService = async (token: string): Promise<UserModel | null> => {
     //return should be different from UserModel if returning only id and username

@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { createMessageController, getChatMessagesController, deleteAllUserMessagesFromChatController, deleteUserMessageController } from "../controllers/messageControllers.ts";
-import { verifyJWTMiddleware } from "../middlewares/authMiddlewares.ts";
+import { createMessageController, getChatMessagesController, deleteAllUserMessagesFromChatController, deleteUserMessageController } from "../controllers/messageControllers";
+import { verifyJWTMiddleware } from "../middlewares/authMiddlewares";
 
 const router = Router();
 

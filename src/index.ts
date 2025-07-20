@@ -1,12 +1,12 @@
 import express, { Request, Response, NextFunction } from "express";
-import env_vars from "./config/environment_variables.ts";
-import seeder from "./database/seeder.ts";
-import authRouter from "./routers/authRouter.ts";
-import userRouter from "./routers/userRouter.ts";
-import messageRouter from "./routers/messageRouter.ts";
-import chatRouter from "./routers/chatRouter.ts";
+import env_vars from "./config/environment_variables";
+import seeder from "./database/seeder";
+import authRouter from "./routers/authRouter";
+import userRouter from "./routers/userRouter";
+import messageRouter from "./routers/messageRouter";
+import chatRouter from "./routers/chatRouter";
 import { createServer } from "http";
-import { initSocket } from "./socket/socket.ts";
+import { initSocket } from "./socket/socket";
 import cors from 'cors';
 import cookieParser from "cookie-parser";
 
