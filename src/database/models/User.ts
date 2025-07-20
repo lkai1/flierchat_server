@@ -1,7 +1,8 @@
-import { DataTypes } from "sequelize"
+import { DataTypes, ModelStatic, Sequelize } from "sequelize";
+import { UserModel } from "../../types";
 
-const User = (sequelize) => {
-    return sequelize.define("User", {
+const User = (sequelize: Sequelize): ModelStatic<UserModel> => {
+    return sequelize.define<UserModel>("User", {
         id: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
@@ -19,7 +20,7 @@ const User = (sequelize) => {
         }
     }, {
         timestamps: false
-    })
-}
+    });
+};
 
-export default User
+export default User;
