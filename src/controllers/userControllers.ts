@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { deleteUserService, getUserFromJWTService } from "../services/userServices";
+import { deleteUserService, getUserFromJWTService } from "../services/userServices.js";
 
 export const getUserInfoFromJWTController = async (request: Request, response: Response): Promise<void> => {
     try {

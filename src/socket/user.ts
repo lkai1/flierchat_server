@@ -1,6 +1,6 @@
 import { RemoteSocket, Server, Socket } from "socket.io";
-import { getChatWithParticipantIdsFromIdService, getUserChatsService } from "../services/chatServices";
-import { getUserFromJWTService } from "../services/userServices";
+import { getChatWithParticipantIdsFromIdService, getUserChatsService } from "../services/chatServices.js";
+import { getUserFromJWTService } from "../services/userServices.js";
 
 interface EmitEvents {
     error(): void;

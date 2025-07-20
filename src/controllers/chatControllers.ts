@@ -6,7 +6,7 @@ import {
     validateDeleteChatParams,
     validateGetUnreadMessagesInChatParams,
     validateUpdateUnreadMessagesInChatParams
-} from "../utils/validation/chatValidation";
+} from "../utils/validation/chatValidation.js";
 import {
     createPrivateChatService,
     createGroupChatService,
@@ -22,8 +22,8 @@ import {
     getChatLastOpenedByUserService,
     getUnreadMessagesAmountInChatService,
     updateChatLastOpenedByUserService
-} from "../services/chatServices";
-import { getUserFromIdService, getUserFromJWTService, getUserFromUsernameService } from "../services/userServices";
+} from "../services/chatServices.js";
+import { getUserFromIdService, getUserFromJWTService, getUserFromUsernameService } from "../services/userServices.js";
 import { Request, Response } from "express";
 
 export const createPrivateChatController = async (request: Request<object, object, { participantUsername: string }>, response: Response): Promise<void> => {

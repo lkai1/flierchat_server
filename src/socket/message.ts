@@ -1,7 +1,7 @@
 import { Socket } from "socket.io";
-import { getChatFromIdService, getUserIsChatParticipantService } from "../services/chatServices";
-import { getUserFromJWTService } from "../services/userServices";
-import { MessageModel } from "../types";
+import { getChatFromIdService, getUserIsChatParticipantService } from "../services/chatServices.js";
+import { getUserFromJWTService } from "../services/userServices.js";
+import { MessageModel } from "../types.js";
 
 export const initMessage = (socket: Socket): void => {
     socket.on("message", async ({ message, chatId }: { message: MessageModel, chatId: string }) => {

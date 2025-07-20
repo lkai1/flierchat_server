@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { verifyJWTMiddleware } from "../middlewares/authMiddlewares";
+import { verifyJWTMiddleware } from "../middlewares/authMiddlewares.js";
 import {
     createPrivateChatController,
     createGroupChatController,
@@ -9,7 +9,7 @@ import {
     removeChatParticipantController,
     getUnreadMessagesInChatController,
     updateUnreadMessagesInChatController
-} from "../controllers/chatControllers";
+} from "../controllers/chatControllers.js";
 
 const router = Router();
 

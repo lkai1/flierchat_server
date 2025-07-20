@@ -1,9 +1,9 @@
 import { Sequelize } from "sequelize";
-import env_vars from '../config/environment_variables';
-import User from "./models/User";
-import Chat from "./models/Chat";
-import ChatParticipant from "./models/ChatParticipant";
-import Message from "./models/Message";
+import env_vars from '../config/environment_variables.js';
+import User from "./models/User.js";
+import Chat from "./models/Chat.js";
+import ChatParticipant from "./models/ChatParticipant.js";
+import Message from "./models/Message.js";
 
 const sequelize = new Sequelize(`${env_vars.DATABASE_CONNECTION_STRING}`, { logging: false });
 

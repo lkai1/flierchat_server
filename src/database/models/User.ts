@@ -1,5 +1,5 @@
 import { DataTypes, ModelStatic, Sequelize } from "sequelize";
-import { UserModel } from "../../types";
+import { UserModel } from "../../types.js";
 
 const User = (sequelize: Sequelize): ModelStatic<UserModel> => {
     return sequelize.define<UserModel>("User", {

@@ -1,5 +1,5 @@
-import db from "../database/db";
-import { ChatModel, MessageModel, MessageWithCreator } from "../types";
+import db from "../database/db.js";
+import { ChatModel, MessageModel, MessageWithCreator } from "../types.js";
 
 export const createMessageService = async (creatorId: string, chatId: string, value: string): Promise<MessageModel> => {
     const message = await db.messages.create({

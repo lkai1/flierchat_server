@@ -1,5 +1,5 @@
 import { DataTypes, Sequelize, ModelStatic } from 'sequelize';
-import { ChatModel } from '../../types';
+import { ChatModel } from '../../types.js';
 
 const Chat = (sequelize: Sequelize): ModelStatic<ChatModel> => {
     return sequelize.define<ChatModel>('Chat', {

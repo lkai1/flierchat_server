@@ -1,10 +1,10 @@
 import { Server, Socket } from "socket.io";
-import { initMessage } from "./message";
-import { initChat } from "./chat";
+import { initMessage } from "./message.js";
+import { initChat } from "./chat.js";
 import jwt from "jsonwebtoken";
-import env_vars from "../config/environment_variables";
-import { getUserFromJWTService } from "../services/userServices";
-import { initUser, emitUserConnected, emitUserDisconnected } from "./user";
+import env_vars from "../config/environment_variables.js";
+import { getUserFromJWTService } from "../services/userServices.js";
+import { initUser, emitUserConnected, emitUserDisconnected } from "./user.js";
 import { Server as HTTPServer } from "http";
 import cookie from "cookie";
 

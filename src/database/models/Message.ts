@@ -1,5 +1,5 @@
 import { DataTypes, ModelStatic, Sequelize } from "sequelize";
-import { MessageModel } from "../../types";
+import { MessageModel } from "../../types.js";
 
 
 const Message = (sequelize: Sequelize): ModelStatic<MessageModel> => {

@@ -1,6 +1,6 @@
 import pg from 'pg';
-import env_vars from '../config/environment_variables';
-import db from './db';
+import env_vars from '../config/environment_variables.js';
+import db from './db.js';
 
 const createNewDB = async (): Promise<void> => {
     try {
