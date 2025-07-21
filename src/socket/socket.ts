@@ -11,7 +11,10 @@ import cookie from "cookie";
 export const initSocket = (httpServer: HTTPServer): void => {
     const io = new Server(httpServer, {
         cors: {
-            origin: "http://localhost:5173",
+            //production
+            origin: "flierchat.com",
+            //development
+            /* origin: "http://localhost:5173", */
             credentials: true,
         }
     });

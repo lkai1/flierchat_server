@@ -25,7 +25,10 @@ app.use((err: Error | undefined, _req: Request, res: Response, next: NextFunctio
 
 
 app.use(cors({
-    origin: 'http://localhost:5173',
+    //production
+    origin: "flierchat.com",
+    //development
+    /* origin: "http://localhost:5173", */
     credentials: true
 }));
 app.use(cookieParser());
