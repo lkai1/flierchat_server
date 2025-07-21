@@ -72,6 +72,7 @@ export const getUserChatsService = async (userId: string): Promise<ChatWithParti
             id: String(chat.id),
             chatName: chat.chatName ?? null,
             isGroup: chat.isGroup,
+            creatorId: chat.creatorId,
             chatParticipants: chat.chatParticipants?.map((user) => {
                 return {
                     id: String(user.id),

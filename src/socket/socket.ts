@@ -19,7 +19,7 @@ export const initSocket = (httpServer: HTTPServer): void => {
         }
     });
 
-    io.use((socket: Socket, next): void => {
+    io.use(async (socket: Socket, next): Promise<void> => {
         try {
 
             const rawCookie = socket.handshake.headers.cookie;
@@ -40,7 +40,15 @@ export const initSocket = (httpServer: HTTPServer): void => {
             }
 
             jwt.verify(token, env_vars.TOKEN_SECRET);
-            socket.token = token;
+            const user = await getUserFromJWTService(token);
+
+            if (user !== null) {
+                /* socket.token = token; */
+                socket.userId = user.id
+            } else {
+                throw new Error;
+            }
+
             next();
         } catch {
             socket.disconnect(true);
