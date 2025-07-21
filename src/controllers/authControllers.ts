@@ -99,15 +99,15 @@ export const verifyLoginController = (request: Request, response: Response): voi
     } catch {
       response.clearCookie('auth_token', {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       }).status(400).send("Invalid token!");
     }
   } catch {
     response.clearCookie('auth_token', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     }).status(500).send("Something went wrong! Try again later.");
   }
 };
@@ -117,8 +117,8 @@ export const logoutController = (_request: Request, response: Response): void =>
     response
       .clearCookie('auth_token', {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       })
       .status(200)
       .send('Logged out');
