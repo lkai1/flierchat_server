@@ -26,7 +26,7 @@ app.use((err: Error | undefined, _req: Request, res: Response, next: NextFunctio
 
 app.use(cors({
     //production
-    origin: "flierchat.com",
+    origin: "https://www.flierchat.com",
     //development
     /* origin: "http://localhost:5173", */
     credentials: true

@@ -12,7 +12,7 @@ export const initSocket = (httpServer: HTTPServer): void => {
     const io = new Server(httpServer, {
         cors: {
             //production
-            origin: "flierchat.com",
+            origin: "https://www.flierchat.com",
             //development
             /* origin: "http://localhost:5173", */
             credentials: true,
