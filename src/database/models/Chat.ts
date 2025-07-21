@@ -18,7 +18,7 @@ const Chat = (sequelize: Sequelize): ModelStatic<ChatModel> => {
             allowNull: false
         },
         creatorId: {
-            type: DataTypes.BOOLEAN,
+            type: DataTypes.UUID,
             allowNull: false
         },
     }, {
