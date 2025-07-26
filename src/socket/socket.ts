@@ -50,7 +50,8 @@ export const initSocket = (httpServer: HTTPServer): void => {
             }
 
             next();
-        } catch {
+        } catch (e) {
+            console.log(e)
             socket.disconnect(true);
         }
     });
@@ -91,7 +92,8 @@ export const initSocket = (httpServer: HTTPServer): void => {
             socket.on("disconnect", async () => {
                 await emitUserDisconnected(socket, io);
             });
-        } catch {
+        } catch (e) {
+            console.log(e)
             socket.disconnect(true);
         }
     });

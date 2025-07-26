@@ -33,13 +33,13 @@ export const getPrivateChatBetweenUsersService = async (userId: string, userId2:
             [Op.or]: [
                 {
                     [Op.and]: [
-                        where(col("chats.creatorId"), userId),
+                        where(col("Chat.creatorId"), userId),
                         where(col("ChatParticipants.userId"), userId2),
                     ],
                 },
                 {
                     [Op.and]: [
-                        where(col("chats.creatorId"), userId2),
+                        where(col("Chat.creatorId"), userId2),
                         where(col("ChatParticipants.userId"), userId),
                     ],
                 }

@@ -71,7 +71,8 @@ export const createPrivateChatController = async (request: Request<object, objec
         await updateChatLastOpenedByUserService(participant.id, chatId);
 
         response.status(201).json(chatId);
-    } catch {
+    } catch (e) {
+        console.log(e)
         response.status(500).send("Something went wrong! Try again later.");
     }
 };

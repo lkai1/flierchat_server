@@ -2,11 +2,21 @@ import { Server, Socket } from "socket.io";
 import { getUserIsChatParticipantService, getChatFromIdService, getChatWithParticipantIdsFromIdService } from "../services/chatServices.js";
 import { getUserFromIdService, getUserFromJWTService } from "../services/userServices.js";
 import { emitOnlineUsersInUserChats } from "./user.js";
+import cookie from "cookie"
 
 export const initChat = (socket: Socket, io: Server): void => {
     socket.on("selectChat", async ({ chatId }: { chatId: string }) => {
         try {
-            const user = await getUserFromJWTService(socket.token);
+            const rawCookie = socket.handshake.headers.cookie;
+            const cookies = cookie.parse(rawCookie || "");
+            const token = cookies.auth_token;
+
+            if (!token) {
+                socket.emit("error");
+                return;
+            }
+
+            const user = await getUserFromJWTService(token);
             const chat = await getChatFromIdService(chatId);
             if (!user || !chat) {
                 socket.emit("error");
@@ -126,7 +136,16 @@ export const initChat = (socket: Socket, io: Server): void => {
 
     socket.on("chatParticipantRemove", async ({ chatId, participantId }: { chatId: string, participantId: string }) => {
         try {
-            const user = await getUserFromJWTService(socket.token);
+            const rawCookie = socket.handshake.headers.cookie;
+            const cookies = cookie.parse(rawCookie || "");
+            const token = cookies.auth_token;
+
+            if (!token) {
+                socket.emit("error");
+                return;
+            }
+
+            const user = await getUserFromJWTService(token);
             const chatParticipant = await getUserFromIdService(participantId);
             const chat = await getChatFromIdService(chatId);
 

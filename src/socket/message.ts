@@ -2,11 +2,21 @@ import { Socket } from "socket.io";
 import { getChatFromIdService, getUserIsChatParticipantService } from "../services/chatServices.js";
 import { getUserFromJWTService } from "../services/userServices.js";
 import { MessageModel } from "../types.js";
+import cookie from "cookie"
 
 export const initMessage = (socket: Socket): void => {
     socket.on("message", async ({ message, chatId }: { message: MessageModel, chatId: string }) => {
         try {
-            const user = await getUserFromJWTService(socket.token);
+            const rawCookie = socket.handshake.headers.cookie;
+            const cookies = cookie.parse(rawCookie || "");
+            const token = cookies.auth_token;
+
+            if (!token) {
+                socket.emit("error");
+                return;
+            }
+
+            const user = await getUserFromJWTService(token);
             const chat = await getChatFromIdService(chatId);
 
             if (!user || !chat) {
@@ -42,7 +52,16 @@ export const initMessage = (socket: Socket): void => {
 
     socket.on("messageDeleteAll", async ({ chatId }: { chatId: string }) => {
         try {
-            const user = await getUserFromJWTService(socket.token);
+            const rawCookie = socket.handshake.headers.cookie;
+            const cookies = cookie.parse(rawCookie || "");
+            const token = cookies.auth_token;
+
+            if (!token) {
+                socket.emit("error");
+                return;
+            }
+
+            const user = await getUserFromJWTService(token);
 
             if (!user) {
                 socket.emit("error");

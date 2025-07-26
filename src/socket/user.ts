@@ -1,6 +1,7 @@
 import { RemoteSocket, Server, Socket } from "socket.io";
 import { getChatWithParticipantIdsFromIdService, getUserChatsService } from "../services/chatServices.js";
 import { getUserFromJWTService } from "../services/userServices.js";
+import cookie from "cookie";
 
 interface EmitEvents {
     error(): void;
@@ -10,7 +11,17 @@ interface EmitEvents {
 
 export const emitOnlineUsersInUserChats = async (socket: Socket<object, EmitEvents> | RemoteSocket<EmitEvents, object>, io: Server): Promise<void> => {
     try {
-        const user = await getUserFromJWTService(socket.token);
+        const rawCookie = socket.handshake.headers.cookie;
+        const cookies = cookie.parse(rawCookie || "");
+        const token = cookies.auth_token;
+
+        if (!token) {
+            socket.emit("error");
+            return;
+        }
+
+        const user = await getUserFromJWTService(token);
+
         if (!user) {
             socket.emit("error");
             return;
@@ -18,7 +29,6 @@ export const emitOnlineUsersInUserChats = async (socket: Socket<object, EmitEven
 
         const userChats = await getUserChatsService(user.id);
         const uniqueParticipantsInUserChats = [...new Set(userChats.map((userChat) => {
-            //userChat.Chat.chatParticipants.map
             return userChat.chatParticipants.map((participant) => { return participant.id; });
         }).flat())];
 
@@ -27,6 +37,7 @@ export const emitOnlineUsersInUserChats = async (socket: Socket<object, EmitEven
         const onlineSocketsInUserChats = sockets.filter((userSocket) => {
             return uniqueParticipantsInUserChats.includes(userSocket.userId);
         });
+
         socket.emit("onlineUsers", onlineSocketsInUserChats.map(socket => { return socket.userId; }));
 
     } catch {
@@ -36,7 +47,16 @@ export const emitOnlineUsersInUserChats = async (socket: Socket<object, EmitEven
 
 export const emitUserDisconnected = async (socket: Socket, io: Server): Promise<void> => {
     try {
-        const user = await getUserFromJWTService(socket.token);
+        const rawCookie = socket.handshake.headers.cookie;
+        const cookies = cookie.parse(rawCookie || "");
+        const token = cookies.auth_token;
+
+        if (!token) {
+            socket.emit("error");
+            return;
+        }
+
+        const user = await getUserFromJWTService(token);
         if (!user) {
             socket.emit("error");
             return;
@@ -64,6 +84,14 @@ export const emitUserDisconnected = async (socket: Socket, io: Server): Promise<
 
 export const emitUserConnected = async (socket: Socket, io: Server): Promise<void> => {
     try {
+        const rawCookie = socket.handshake.headers.cookie;
+        const cookies = cookie.parse(rawCookie || "");
+        const token = cookies.auth_token;
+
+        if (!token) {
+            socket.emit("error");
+            return;
+        }
 
         const user = await getUserFromJWTService(socket.token);
 
@@ -99,8 +127,6 @@ export const initUser = (socket: Socket, io: Server): void => {
 
     socket.on("userDelete", async ({ userChatIds }: { userChatIds: string[] }) => {
         try {
-
-
             let userChats = await Promise.all(
                 /* eslint-disable-next-line @typescript-eslint/promise-function-async, arrow-body-style*/
                 userChatIds.map((chatId) => getChatWithParticipantIdsFromIdService(chatId))

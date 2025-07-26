@@ -28,7 +28,7 @@ app.use(cors({
     //production
     origin: "https://www.flierchat.com",
     //development
-    /*  origin: "http://localhost:5173", */
+    /* origin: "http://localhost:5173", */
     credentials: true
 }));
 app.use(cookieParser());
