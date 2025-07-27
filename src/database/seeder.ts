@@ -1,8 +1,8 @@
-import pg from 'pg';
-import env_vars from '../config/environment_variables.js';
+/* import pg from 'pg';
+import env_vars from '../config/environment_variables.js'; */
 import db from './db.js';
 
-const createNewDB = async (): Promise<void> => {
+/* const createNewDB = async (): Promise<void> => {
     try {
         const client = new pg.Client(`postgres://${env_vars.DATABASE_USER}:${env_vars.DATABASE_PASSWORD}@${env_vars.DATABASE_HOST}/postgres`);
         await client.connect();
@@ -18,10 +18,10 @@ const createNewDB = async (): Promise<void> => {
         console.log(error);
     }
 
-};
+}; */
 
 const seeder = async (): Promise<void> => {
-    await createNewDB();
+    /* await createNewDB(); */
     await db.sequelize.sync({ alter: true })
         .catch(error => { console.log(error); });
 };
