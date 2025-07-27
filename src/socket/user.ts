@@ -122,11 +122,6 @@ export const emitUserConnected = async (socket: Socket, io: Server): Promise<voi
 
 export const initUser = (socket: Socket, io: Server): void => {
     socket.on("onlineUsers", async () => {
-        const rawCookie = socket.handshake.headers.cookie;
-        const cookies = cookie.parse(rawCookie || "");
-        const token = cookies.auth_token;
-        console.log("Socket onlineusers auth token: ", token);
-
         await emitOnlineUsersInUserChats(socket, io);
     });
 

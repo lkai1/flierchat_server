@@ -50,8 +50,7 @@ export const initSocket = (httpServer: HTTPServer): void => {
             }
 
             next();
-        } catch (e) {
-            console.log(e)
+        } catch {
             socket.disconnect(true);
         }
     });
@@ -59,7 +58,7 @@ export const initSocket = (httpServer: HTTPServer): void => {
     io.on("connection", async (socket) => {
         try {
             const rawCookie = socket.handshake.headers.cookie;
-            console.log("Socket rawCookie: ", rawCookie);
+
             if (typeof rawCookie !== 'string' || rawCookie.length === 0) {
                 throw new Error('No cookie found');
             }
@@ -92,8 +91,7 @@ export const initSocket = (httpServer: HTTPServer): void => {
             socket.on("disconnect", async () => {
                 await emitUserDisconnected(socket, io);
             });
-        } catch (e) {
-            console.log(e)
+        } catch {
             socket.disconnect(true);
         }
     });

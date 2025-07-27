@@ -45,11 +45,6 @@ export const initChat = (socket: Socket, io: Server): void => {
 
     socket.on("chatCreate", async ({ chatId }: { chatId: string }) => {
         try {
-            const rawCookie = socket.handshake.headers.cookie;
-            const cookies = cookie.parse(rawCookie || "");
-            const token = cookies.auth_token;
-            console.log("Socket chatCreate auth token: ", token);
-
             const chat = await getChatWithParticipantIdsFromIdService(chatId);
 
             if (!chat) {
