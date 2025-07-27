@@ -41,7 +41,7 @@ app.use("/api/chat", chatRouter);
 const startApp = async (): Promise<void> => {
     await seeder();
     initSocket(httpServer);
-    httpServer.listen(env_vars.APP_PORT, () => { console.log(`Server is running at port: ${env_vars.APP_PORT}.`); });
+    httpServer.listen(env_vars.PORT, () => { console.log(`Server is running at port: ${env_vars.PORT}.`); });
 };
 
 void startApp();
