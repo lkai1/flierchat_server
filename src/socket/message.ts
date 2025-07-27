@@ -10,7 +10,7 @@ export const initMessage = (socket: Socket): void => {
             const rawCookie = socket.handshake.headers.cookie;
             const cookies = cookie.parse(rawCookie || "");
             const token = cookies.auth_token;
-
+            console.log("Socket message auth token: ", token);
             if (!token) {
                 socket.emit("error");
                 return;
