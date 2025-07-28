@@ -46,6 +46,7 @@ export const initChat = (socket: Socket, io: Server): void => {
     socket.on("chatCreate", async ({ chatId }: { chatId: string }) => {
         try {
             const chat = await getChatWithParticipantIdsFromIdService(chatId);
+            console.log("chatCreate1 ", chat)
 
             if (!chat) {
                 socket.emit("error");
@@ -53,14 +54,15 @@ export const initChat = (socket: Socket, io: Server): void => {
             }
 
             const chatParticipantIds = chat.chatParticipants.map((participant) => { return participant.id; });
-
+            console.log("chatCreate2 ", chatParticipantIds)
             const sockets = await io.fetchSockets();
 
             const onlineSocketsInChat = sockets.filter((userSocket) => {
                 return chatParticipantIds.includes(userSocket.userId);
             });
-
+            console.log("chatCreate3 ", onlineSocketsInChat)
             for (const userSocket of onlineSocketsInChat) {
+                console.log("chatCreate4 ", userSocket)
                 userSocket.emit("chatCreate");
                 await emitOnlineUsersInUserChats(userSocket, io);
             }

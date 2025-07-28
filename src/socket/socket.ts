@@ -91,7 +91,8 @@ export const initSocket = (httpServer: HTTPServer): void => {
             socket.on("disconnect", async () => {
                 await emitUserDisconnected(socket, io);
             });
-        } catch {
+        } catch (e) {
+            console.log("ERROR SOCKET CONNECTION ", e)
             socket.disconnect(true);
         }
     });
