@@ -87,12 +87,12 @@ export const initSocket = (httpServer: HTTPServer): void => {
             initMessage(socket);
             initChat(socket, io);
             initUser(socket, io);
-            await emitUserConnected(socket, io);
-            socket.on("disconnect", async () => {
-                await emitUserDisconnected(socket, io);
-            });
-        } catch (e) {
-            console.log("ERROR SOCKET CONNECTION ", e)
+            emitUserConnected(socket, io);
+            socket.on("disconnect", (): void => {
+                emitUserDisconnected(socket, io)
+            })
+        } catch {
+            emitUserDisconnected(socket, io);
             socket.disconnect(true);
         }
     });

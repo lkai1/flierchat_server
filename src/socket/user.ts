@@ -38,7 +38,9 @@ export const emitOnlineUsersInUserChats = async (socket: Socket<object, EmitEven
             return uniqueParticipantsInUserChats.includes(userSocket.userId);
         });
 
-        socket.emit("onlineUsers", onlineSocketsInUserChats.map(socket => { return socket.userId; }));
+        socket.emit("onlineUsers", onlineSocketsInUserChats.map(socket => {
+            return socket.userId;
+        }));
 
     } catch {
         socket.emit("error");
@@ -93,7 +95,7 @@ export const emitUserConnected = async (socket: Socket, io: Server): Promise<voi
             return;
         }
 
-        const user = await getUserFromJWTService(socket.token);
+        const user = await getUserFromJWTService(token);
 
         if (!user) {
             socket.emit("error");
