@@ -8,7 +8,7 @@ const validateUsername = (username: string): boolean => {
 const validatePassword = (password: string): boolean => {
     return Boolean(password
         && typeof password === "string"
-        && password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,30}$/));
+        && password.match(/^[0-9a-zA-Z@$!%*?&]{8,30}$/));;
 };
 
 export const validateRegisterParams = (params: {
