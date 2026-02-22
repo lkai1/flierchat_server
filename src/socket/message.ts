@@ -32,7 +32,7 @@ export const initMessage = (socket: Socket): void => {
                 };
                 // eslint-disable-next-line no-unused-vars
                 const { creatorId, ...messageToSend } = updatedMessage;
-                socket.nsp.in(chatId).emit("message", { message: messageToSend });
+                socket.nsp.in(chatId).emit("message", messageToSend);
             } else {
                 socket.emit("error");
             }
