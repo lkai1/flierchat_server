@@ -5,13 +5,22 @@ import { emitOnlineUsersInUserChats } from "./user.js";
 import cookie from "cookie"
 
 export const initChat = (socket: Socket, io: Server): void => {
+    let isSelectingChat = false;
+
     socket.on("selectChat", async ({ chatId }: { chatId: string }) => {
+        if (isSelectingChat) {
+            socket.emit("error");
+            return;
+        }
+
+        isSelectingChat = true;
+
         try {
             const rawCookie = socket.handshake.headers.cookie;
             const cookies = cookie.parse(rawCookie || "");
             const token = cookies.auth_token;
 
-            if (!token) {
+            if (typeof token !== "string" || token.length === 0) {
                 socket.emit("error");
                 return;
             }
@@ -40,6 +49,8 @@ export const initChat = (socket: Socket, io: Server): void => {
             }
         } catch {
             socket.emit("error");
+        } finally {
+            isSelectingChat = false;
         }
     });
 

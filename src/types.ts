@@ -10,6 +10,8 @@ export interface ChatWithParticipants {
     id: string;
     chatName: string | null;
     isGroup: boolean;
+    /* make sure that this creatorId should actually exist and in this way */
+    creatorId: string;
     chatParticipants: {
         id: string;
         username: string;
@@ -36,7 +38,12 @@ export interface ChatParticipantCreationAttributes {
     lastOpened?: string;
 }
 
-
+export interface UserModelWithIdAndUsername extends Model<InferAttributes<UserModel>, InferCreationAttributes<UserModel>> {
+    id: CreationOptional<string>;
+    username: string;
+    hash: string;
+    createUserChat(params: ChatCreationAttributes): Promise<ChatModel>;
+}
 
 export interface UserModel extends Model<InferAttributes<UserModel>, InferCreationAttributes<UserModel>> {
     id: CreationOptional<string>;

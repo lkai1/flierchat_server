@@ -10,7 +10,7 @@ export const initMessage = (socket: Socket): void => {
             const rawCookie = socket.handshake.headers.cookie;
             const cookies = cookie.parse(rawCookie || "");
             const token = cookies.auth_token;
-            if (!token) {
+            if (typeof token !== "string" || token.length === 0) {
                 socket.emit("error");
                 return;
             }
@@ -55,7 +55,7 @@ export const initMessage = (socket: Socket): void => {
             const cookies = cookie.parse(rawCookie || "");
             const token = cookies.auth_token;
 
-            if (!token) {
+            if (typeof token !== "string" || token.length === 0) {
                 socket.emit("error");
                 return;
             }

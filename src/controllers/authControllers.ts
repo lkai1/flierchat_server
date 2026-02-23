@@ -29,7 +29,8 @@ export const registerController = async (request: Request<object, object, { user
 
     response.status(201).send("User registered!");
 
-  } catch {
+  } catch (error) {
+    console.error("Error in registerController", error);
     response.status(500).send("Something went wrong! Try again later.");
   }
 };
@@ -70,17 +71,16 @@ export const loginController = async (request: Request<object, object, { usernam
         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         maxAge: 1000 * 60 * 60 * 24,
       })
-      .status(200)
-      .send("User logged in.");
+      .status(200).send("User logged in.");
 
-  } catch {
+  } catch (error) {
+    console.error("Error in loginController", error);
     response.status(500).send("Something went wrong! Try again later.");
   }
 };
 
 export const verifyLoginController = (request: Request, response: Response): void => {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const token = request.cookies.auth_token;
 
     if (typeof token !== "string" || token.length === 0) {
@@ -94,16 +94,18 @@ export const verifyLoginController = (request: Request, response: Response): voi
         return;
       }
 
-      jwt.verify(token, env_vars.TOKEN_SECRET);
+      jwt.verify(token, env_vars.TOKEN_SECRET, { algorithms: ['HS256'] });
       response.status(200).send("Verified login!");
-    } catch {
+    } catch (error) {
+      console.error("Error in verifyLoginController", error);
       response.clearCookie('auth_token', {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       }).status(400).send("Invalid token!");
     }
-  } catch {
+  } catch (error) {
+    console.error("Error in verifyLoginController", error);
     response.clearCookie('auth_token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -122,7 +124,8 @@ export const logoutController = (_request: Request, response: Response): void =>
       })
       .status(200)
       .send('Logged out');
-  } catch {
+  } catch (error) {
+    console.error("Error in logoutController", error);
     response.status(500).send("Something went wrong! Try again later.");
   }
 };

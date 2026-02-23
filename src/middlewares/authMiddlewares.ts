@@ -18,7 +18,7 @@ export const verifyJWTMiddleware = (request: Request, response: Response, next: 
         }
 
         try {
-            jwt.verify(token, env_vars.TOKEN_SECRET);
+            jwt.verify(token, env_vars.TOKEN_SECRET, { algorithms: ['HS256'] });
             next();
         } catch {
             response.status(400).send("Invalid token!");

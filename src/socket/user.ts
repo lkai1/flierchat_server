@@ -15,7 +15,7 @@ export const emitOnlineUsersInUserChats = async (socket: Socket<object, EmitEven
         const cookies = cookie.parse(rawCookie || "");
         const token = cookies.auth_token;
 
-        if (!token) {
+        if (typeof token !== "string" || token.length === 0) {
             socket.emit("error");
             return;
         }
@@ -53,7 +53,7 @@ export const emitUserDisconnected = async (socket: Socket, io: Server): Promise<
         const cookies = cookie.parse(rawCookie || "");
         const token = cookies.auth_token;
 
-        if (!token) {
+        if (typeof token !== "string" || token.length === 0) {
             socket.emit("error");
             return;
         }
@@ -90,7 +90,7 @@ export const emitUserConnected = async (socket: Socket, io: Server): Promise<voi
         const cookies = cookie.parse(rawCookie || "");
         const token = cookies.auth_token;
 
-        if (!token) {
+        if (typeof token !== "string" || token.length === 0) {
             socket.emit("error");
             return;
         }
@@ -154,7 +154,9 @@ export const initUser = (socket: Socket, io: Server): void => {
             });
 
             const onlineSocketsWithSelectedDeletedChat = sockets.filter((userSocket) => {
-                if (userSocket.selectedChat === undefined) { throw new Error; }
+                if (typeof userSocket.selectedChat !== "string" || userSocket.selectedChat.length === 0) {
+                    return false;
+                }
                 return deletedChatIds.includes(userSocket.selectedChat);
             });
 

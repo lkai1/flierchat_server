@@ -40,7 +40,8 @@ export const createMessageController = async (request: Request<object, object, {
 
         response.status(201).json(messageToSend);
 
-    } catch {
+    } catch (error) {
+        console.error("Error in createMessageController", error);
         response.status(500).send("Something went wrong! Try again later.");
     }
 };
@@ -81,7 +82,8 @@ export const getChatMessagesController = async (request: Request<object, object,
 
         response.status(200).json(messages);
 
-    } catch {
+    } catch (error) {
+        console.error("Error in getChatMessagesController", error);
         response.status(500).send("Something went wrong! Try again later.");
     }
 };
@@ -122,7 +124,8 @@ export const deleteAllUserMessagesFromChatController = async (request: Request<o
 
         response.status(200).send("All user messages deleted from chat.");
 
-    } catch {
+    } catch (error) {
+        console.error("Error in deleteAllUserMessagesFromChatController", error);
         response.status(500).send("Something went wrong! Try again later.");
     }
 };
@@ -161,7 +164,8 @@ export const deleteUserMessageController = async (request: Request<object, objec
 
         response.status(200).send("Message deleted.");
 
-    } catch {
+    } catch (error) {
+        console.error("Error in deleteUserMessageController", error);
         response.status(500).send("Something went wrong! Try again later.");
     }
 };

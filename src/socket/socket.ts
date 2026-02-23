@@ -39,14 +39,14 @@ export const initSocket = (httpServer: HTTPServer): void => {
                 throw new Error("TOKEN_SECRET environment variable is required");
             }
 
-            jwt.verify(token, env_vars.TOKEN_SECRET);
+            jwt.verify(token, env_vars.TOKEN_SECRET, { algorithms: ['HS256'] });
             const user = await getUserFromJWTService(token);
 
             if (user !== null) {
                 /* socket.token = token; */
-                socket.userId = user.id
+                socket.userId = user.id;
             } else {
-                throw new Error;
+                throw new Error();
             }
 
             next();
@@ -74,7 +74,7 @@ export const initSocket = (httpServer: HTTPServer): void => {
                 throw new Error("TOKEN_SECRET environment variable is required");
             }
 
-            jwt.verify(token, env_vars.TOKEN_SECRET);
+            jwt.verify(token, env_vars.TOKEN_SECRET, { algorithms: ['HS256'] });
             const user = await getUserFromJWTService(token);
 
             if (!user) {

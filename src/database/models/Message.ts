@@ -14,6 +14,7 @@ const Message = (sequelize: Sequelize): ModelStatic<MessageModel> => {
             type: DataTypes.TEXT,
             allowNull: false
         },
+        //date should propably be a date format instead of string. now it is saved as a string
         timestamp: {
             type: DataTypes.STRING,
             allowNull: false

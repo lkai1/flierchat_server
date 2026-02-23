@@ -3,6 +3,7 @@ export const validateCreateMessageParams = (params: {
     chatId: string,
     message: string
 }): boolean => {
+    /* make restriction on message length */
     return Boolean(
         typeof params === "object"
         && Object.keys(params).length === 2

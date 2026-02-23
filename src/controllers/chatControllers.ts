@@ -71,7 +71,8 @@ export const createPrivateChatController = async (request: Request<object, objec
         await updateChatLastOpenedByUserService(participant.id, chatId);
 
         response.status(201).json(chatId);
-    } catch {
+    } catch (error) {
+        console.error("Error in createPrivateChatController", error);
         response.status(500).send("Something went wrong! Try again later.");
     }
 };
@@ -112,7 +113,8 @@ export const createGroupChatController = async (request: Request<object, object,
         await updateChatLastOpenedByUserService(user.id, chatId);
 
         response.status(201).json(chatId);
-    } catch {
+    } catch (error) {
+        console.error("Error in createGroupChatController", error);
         response.status(500).send("Something went wrong! Try again later.");
     }
 };
@@ -175,7 +177,8 @@ export const addGroupChatParticipantController = async (request: Request<object,
 
         response.status(201).json(participant.id);
 
-    } catch {
+    } catch (error) {
+        console.error("Error in addGroupChatParticipantController", error);
         response.status(500).send("Something went wrong! Try again later.");
     }
 };
@@ -213,14 +216,15 @@ export const removeChatParticipantController = async (request: Request<object, o
         }
 
         if (user.id !== participant.id && user.id !== chat.creatorId) {
-            response.status(401).send("Only chat creator can remove chat participants.");
+            response.status(403).send("Only chat creator can remove chat participants.");
             return;
         }
 
         await removeChatParticipantService(chat.id, participant.id);
         response.status(200).json({ chatId: chat.id, participantId: participant.id });
 
-    } catch {
+    } catch (error) {
+        console.error("Error in removeChatParticipantController", error);
         response.status(500).send("Something went wrong! Try again later.");
     }
 };
@@ -245,7 +249,8 @@ export const getUserChatsController = async (request: Request, response: Respons
         const chats = await getUserChatsService(user.id);
 
         response.status(200).json(chats);
-    } catch {
+    } catch (error) {
+        console.error("Error in getUserChatsController", error);
         response.status(500).send("Something went wrong! Try again later.");
     }
 };
@@ -287,7 +292,8 @@ export const deleteChatController = async (request: Request<object, object, { ch
         await deleteChatService(chat);
 
         response.status(200).send("Chat deleted.");
-    } catch {
+    } catch (error) {
+        console.error("Error in deleteChatController", error);
         response.status(500).send("Something went wrong! Try again later.");
     }
 };
@@ -330,7 +336,8 @@ export const getUnreadMessagesInChatController = async (request: Request<object,
 
         response.status(200).json(unreadMessagesAmount);
 
-    } catch {
+    } catch (error) {
+        console.error("Error in getUnreadMessagesInChatController", error);
         response.status(500).send("Something went wrong! Try again later.");
     }
 };
@@ -370,7 +377,8 @@ export const updateUnreadMessagesInChatController = async (request: Request<obje
         await updateChatLastOpenedByUserService(user.id, chat.id);
         response.status(200).send("Unread messages updated.");
 
-    } catch {
+    } catch (error) {
+        console.error("Error in updateUnreadMessagesInChatController", error);
         response.status(500).send("Something went wrong! Try again later.");
     }
 };

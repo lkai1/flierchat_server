@@ -14,12 +14,20 @@ export const getUserInfoFromJWTController = async (request: Request, response: R
 
         try {
             const user = await getUserFromJWTService(token);
-            response.status(200).json(user);
-        } catch {
+
+            if (!user) {
+                response.status(404).send("User not found.");
+                return;
+            }
+
+            response.status(200).json({ id: user.id, username: user.username });
+        } catch (error) {
+            console.error("Error in getUserInfoFromJWTController", error);
             response.status(400).send("Invalid token!");
         }
 
-    } catch {
+    } catch (error) {
+        console.error("Error in getUserInfoFromJWTController", error);
         response.status(500).send("Something went wrong! Try again later.");
     }
 };
@@ -46,7 +54,8 @@ export const deleteUserController = async (request: Request, response: Response)
 
         response.status(200).send("User deleted.");
 
-    } catch {
+    } catch (error) {
+        console.error("Error in deleteUserController", error);
         response.status(500).send("Something went wrong! Try again later.");
     }
 };
