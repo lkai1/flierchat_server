@@ -1,5 +1,5 @@
 import { RemoteSocket, Socket } from "socket.io";
-import { getUserFromJWTService } from "../../services/userServices";
+import { getUserFromJWTService } from "../../services/userServices.js";
 import cookie from "cookie";
 import { UserModelWithIdAndUsername } from "../../types";
 

@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import { getIdsFromUserChatsService } from "../../services/chatServices";
+import { getIdsFromUserChatsService } from "../../services/chatServices.js";
 
 export const getAllUniqueSocketIdsInUserRooms = async (userId: string, io: Server) => {
 
