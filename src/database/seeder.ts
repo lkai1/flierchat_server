@@ -23,7 +23,7 @@ import db from './db.js';
 const seeder = async (): Promise<void> => {
     /* await createNewDB(); */
     await db.sequelize.sync({ alter: true })
-        .catch(error => { console.log(error); });
+        .catch(error => { console.error(error); });
 };
 
 export default seeder;

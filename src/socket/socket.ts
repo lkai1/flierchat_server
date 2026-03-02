@@ -7,6 +7,7 @@ import { getUserFromJWTService } from "../services/userServices.js";
 import { initUser, emitUserConnected, emitUserDisconnected } from "./user.js";
 import { Server as HTTPServer } from "http";
 import cookie from "cookie";
+import { getUserChatsService } from "../services/chatServices.js";
 
 export const initSocket = (httpServer: HTTPServer): void => {
     const io = new Server(httpServer, {
@@ -43,7 +44,6 @@ export const initSocket = (httpServer: HTTPServer): void => {
             const user = await getUserFromJWTService(token);
 
             if (user !== null) {
-                /* socket.token = token; */
                 socket.userId = user.id;
             } else {
                 throw new Error();
@@ -82,18 +82,22 @@ export const initSocket = (httpServer: HTTPServer): void => {
                 return;
             }
 
-            // eslint-disable-next-line require-atomic-updates
             socket.userId = user.id;
             initMessage(socket);
             initChat(socket, io);
             initUser(socket, io);
-            emitUserConnected(socket, io);
-            socket.on("disconnect", (): void => {
-                emitUserDisconnected(socket, io)
+            const userChats = await getUserChatsService(user.id)
+            const userChatsIds = userChats.map((value) => { return value.id })
+            await socket.join(userChatsIds)
+            await emitUserConnected(socket, io);
+            socket.on("disconnect", async (): Promise<void> => {
+                await emitUserDisconnected(socket, io)
             })
-        } catch {
-            emitUserDisconnected(socket, io);
+        } catch (error) {
+            console.error("Error on socket connection", error)
+            await emitUserDisconnected(socket, io);
             socket.disconnect(true);
+
         }
     });
 };

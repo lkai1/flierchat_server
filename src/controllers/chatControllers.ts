@@ -19,9 +19,9 @@ import {
     addGroupChatParticipantService,
     deleteChatService,
     removeChatParticipantService,
-    getChatLastOpenedByUserService,
-    getUnreadMessagesAmountInChatService,
-    updateChatLastOpenedByUserService
+    /* getChatLastOpenedByUserService, */
+    updateChatLastOpenedByUserService,
+    getAllUnreadMessagesAmountForUserChatsService
 } from "../services/chatServices.js";
 import { getUserFromIdService, getUserFromJWTService, getUserFromUsernameService } from "../services/userServices.js";
 import { Request, Response } from "express";
@@ -36,7 +36,6 @@ export const createPrivateChatController = async (request: Request<object, objec
 
         const { participantUsername } = request.body;
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const token = request.cookies.auth_token;
 
         if (typeof token !== "string" || token.length === 0) {
@@ -87,7 +86,6 @@ export const createGroupChatController = async (request: Request<object, object,
 
         const { chatName } = request.body;
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const token = request.cookies.auth_token;
 
         if (typeof token !== "string" || token.length === 0) {
@@ -129,7 +127,6 @@ export const addGroupChatParticipantController = async (request: Request<object,
 
         const { chatId, participantUsername } = request.body;
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const token = request.cookies.auth_token;
 
         if (typeof token !== "string" || token.length === 0) {
@@ -193,7 +190,6 @@ export const removeChatParticipantController = async (request: Request<object, o
 
         const { chatId, participantId } = request.body;
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const token = request.cookies.auth_token;
 
         if (typeof token !== "string" || token.length === 0) {
@@ -231,7 +227,6 @@ export const removeChatParticipantController = async (request: Request<object, o
 
 export const getUserChatsController = async (request: Request, response: Response): Promise<void> => {
     try {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const token = request.cookies.auth_token;
 
         if (typeof token !== "string" || token.length === 0) {
@@ -263,7 +258,6 @@ export const deleteChatController = async (request: Request<object, object, { ch
             return;
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const token = request.cookies.auth_token;
 
         if (typeof token !== "string" || token.length === 0) {
@@ -298,15 +292,11 @@ export const deleteChatController = async (request: Request<object, object, { ch
     }
 };
 
-export const getUnreadMessagesInChatController = async (request: Request<object, object, object, { chatId: string }>, response: Response): Promise<void> => {
+export const getAllUnreadMessagesAmountInUserChatsController = async (
+    request: Request,
+    response: Response
+): Promise<void> => {
     try {
-
-        if (!validateGetUnreadMessagesInChatParams(request.query)) {
-            response.status(400).send("Invalid parameters!");
-            return;
-        }
-
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const token = request.cookies.auth_token;
 
         if (typeof token !== "string" || token.length === 0) {
@@ -314,30 +304,18 @@ export const getUnreadMessagesInChatController = async (request: Request<object,
             return;
         }
 
-        const { chatId } = request.query;
         const user = await getUserFromJWTService(token);
-        const chat = await getChatFromIdService(chatId);
 
-        if (!chat || !user) {
-            response.status(404).send("Chat or user not found!");
+        if (!user) {
+            response.status(404).send("User not found!");
             return;
         }
 
-        const userIsChatParticipant = await getUserIsChatParticipantService(user.id, chat.id);
-
-        if (!userIsChatParticipant) {
-            response.status(403).send("User is not chat participant!");
-            return;
-        }
-
-        const lastOpened = await getChatLastOpenedByUserService(chatId, user.id);
-
-        const unreadMessagesAmount = await getUnreadMessagesAmountInChatService(chatId, lastOpened);
-
-        response.status(200).json(unreadMessagesAmount);
+        const unreadMessagesAmounts = await getAllUnreadMessagesAmountForUserChatsService(user.id);
+        response.status(200).json(unreadMessagesAmounts);
 
     } catch (error) {
-        console.error("Error in getUnreadMessagesInChatController", error);
+        console.error("Error in getUnreadMessagesAmountsInUserChatsController", error);
         response.status(500).send("Something went wrong! Try again later.");
     }
 };
@@ -350,7 +328,6 @@ export const updateUnreadMessagesInChatController = async (request: Request<obje
             return;
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const token = request.cookies.auth_token;
 
         if (typeof token !== "string" || token.length === 0) {
@@ -373,7 +350,7 @@ export const updateUnreadMessagesInChatController = async (request: Request<obje
             response.status(403).send("User is not chat participant!");
             return;
         }
-
+        console.log("clearUnread ", user.id)
         await updateChatLastOpenedByUserService(user.id, chat.id);
         response.status(200).send("Unread messages updated.");
 

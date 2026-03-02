@@ -85,6 +85,23 @@ export const getUserChatsService = async (userId: string): Promise<ChatWithParti
     return chatsWithParticipants;
 };
 
+export const getIdsFromUserChatsService = async (userId: string): Promise<string[]> => {
+    const chats = await db.chats.findAll({
+        include: [
+            {
+                model: db.chatParticipants,
+                where: { userId },
+                attributes: []
+            },
+        ],
+        attributes: ["id"], // fetch only the chat id
+        raw: true
+    });
+
+    // chats is now an array of { id: ... }, so map to strings
+    return chats.map((chat) => { return String(chat.id) });
+};
+
 export const getUserIsChatParticipantService = async (userId: string, chatId: string): Promise<boolean> => {
     return Boolean(await db.chatParticipants.findOne({
         where: {
@@ -105,20 +122,34 @@ export const getChatParticipantService = async (userId: string, chatId: string):
     return chatParticipant;
 };
 
-export const getUnreadMessagesAmountInChatService = async (chatId: string, lastOpened: string | null): Promise<number> => {
+import { QueryTypes } from "sequelize";
 
-    if (lastOpened === null) { return 0; }
 
-    const unreadMessagesAmount = await db.messages.count({
-        where: {
-            chatId,
-            timestamp: {
-                [Op.gt]: lastOpened
-            }
+export const getAllUnreadMessagesAmountForUserChatsService = async (
+    userId: string
+): Promise<{ chatId: string; amount: number }[]> => {
+
+    const results = await db.sequelize.query(
+        `
+        SELECT 
+            m."chatId",
+            COUNT(m.id)::int AS amount
+        FROM "Messages" m
+        INNER JOIN "ChatParticipants" cp 
+            ON cp."chatId" = m."chatId"
+        WHERE 
+            cp."userId" = :userId
+            AND m."creatorId" != :userId
+            AND m."timestamp" > cp."lastOpened"
+        GROUP BY m."chatId"
+        `,
+        {
+            replacements: { userId },
+            type: QueryTypes.SELECT
         }
-    });
+    );
 
-    return unreadMessagesAmount ? unreadMessagesAmount : 0;
+    return results as { chatId: string; amount: number }[];
 };
 
 export const getChatLastOpenedByUserService = async (chatId: string, userId: string): Promise<string | null> => {

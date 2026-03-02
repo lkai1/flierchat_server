@@ -7,7 +7,7 @@ import {
     addGroupChatParticipantController,
     deleteChatController,
     removeChatParticipantController,
-    getUnreadMessagesInChatController,
+    getAllUnreadMessagesAmountInUserChatsController,
     updateUnreadMessagesInChatController
 } from "../controllers/chatControllers.js";
 
@@ -19,7 +19,8 @@ router.post("/group/participant", verifyJWTMiddleware, addGroupChatParticipantCo
 router.delete("/participant", verifyJWTMiddleware, removeChatParticipantController);
 router.get("/", verifyJWTMiddleware, getUserChatsController);
 router.delete("/", verifyJWTMiddleware, deleteChatController);
-router.get("/unread_messages", verifyJWTMiddleware, getUnreadMessagesInChatController);
+router.get("/all_unread_messages_amount", verifyJWTMiddleware, getAllUnreadMessagesAmountInUserChatsController);
+/* renaming below */
 router.patch("/unread_messages", verifyJWTMiddleware, updateUnreadMessagesInChatController);
 
 export default router;

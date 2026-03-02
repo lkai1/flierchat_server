@@ -1,58 +1,11 @@
 import { Server, Socket } from "socket.io";
-import { getUserIsChatParticipantService, getChatFromIdService, getChatWithParticipantIdsFromIdService } from "../services/chatServices.js";
+import { /* getUserIsChatParticipantService,  */getChatFromIdService, getChatWithParticipantIdsFromIdService, getUserIsChatParticipantService } from "../services/chatServices.js";
 import { getUserFromIdService, getUserFromJWTService } from "../services/userServices.js";
-import { emitOnlineUsersInUserChats } from "./user.js";
 import cookie from "cookie"
+import { emitOnlineUsersInUserChats } from "./user.js";
+import { verifySocketUserAndReturnUser } from "../utils/socket_helpers/verifySocketUserAndReturnUser.js";
 
 export const initChat = (socket: Socket, io: Server): void => {
-    let isSelectingChat = false;
-
-    socket.on("selectChat", async ({ chatId }: { chatId: string }) => {
-        if (isSelectingChat) {
-            socket.emit("error");
-            return;
-        }
-
-        isSelectingChat = true;
-
-        try {
-            const rawCookie = socket.handshake.headers.cookie;
-            const cookies = cookie.parse(rawCookie || "");
-            const token = cookies.auth_token;
-
-            if (typeof token !== "string" || token.length === 0) {
-                socket.emit("error");
-                return;
-            }
-
-            const user = await getUserFromJWTService(token);
-            const chat = await getChatFromIdService(chatId);
-            if (!user || !chat) {
-                socket.emit("error");
-                return;
-            }
-
-            const userIsChatParticipant = await getUserIsChatParticipantService(user.id, chat.id);
-
-            if (userIsChatParticipant) {
-                const oldChat = socket.selectedChat;
-
-                socket.selectedChat = chatId;
-
-                if (oldChat !== undefined && oldChat !== chatId) {
-                    await socket.leave(oldChat);
-                }
-                await socket.join(chatId);
-
-            } else {
-                socket.emit("error");
-            }
-        } catch {
-            socket.emit("error");
-        } finally {
-            isSelectingChat = false;
-        }
-    });
 
     socket.on("chatCreate", async ({ chatId }: { chatId: string }) => {
         try {
@@ -71,7 +24,6 @@ export const initChat = (socket: Socket, io: Server): void => {
             });
             for (const userSocket of onlineSocketsInChat) {
                 userSocket.emit("chatCreate");
-                await emitOnlineUsersInUserChats(userSocket, io);
             }
 
         } catch {
@@ -95,20 +47,6 @@ export const initChat = (socket: Socket, io: Server): void => {
         }
     });
 
-    socket.on("emptySelectedChat", async () => {
-        try {
-            const currentChat = socket.selectedChat;
-            if (typeof currentChat === "string" && currentChat.length > 0) {
-                await socket.leave(currentChat);
-            }
-            // eslint-disable-next-line require-atomic-updates
-            socket.selectedChat = "";
-            socket.emit("emptySelectedChat");
-        } catch {
-            socket.emit("error");
-        }
-    });
-
     socket.on("chatParticipantAdd", async ({ chatId, participantId }: { chatId: string, participantId: string }) => {
         try {
             const chatParticipant = await getUserFromIdService(participantId);
@@ -118,13 +56,9 @@ export const initChat = (socket: Socket, io: Server): void => {
                 return;
             }
 
-            const sockets = await io.fetchSockets();
+            const socketsInChat = await io.in(chatId).fetchSockets()
 
-            const onlineSocketsInChat = sockets.filter((userSocket) => {
-                return userSocket.selectedChat === chatId;
-            });
-
-            const participantSocket = sockets.find((userSocket) => {
+            const participantSocket = socketsInChat.find((userSocket) => {
                 return userSocket.userId === participantId;
             });
 
@@ -133,8 +67,9 @@ export const initChat = (socket: Socket, io: Server): void => {
                 await emitOnlineUsersInUserChats(participantSocket, io);
             }
 
-            for (const userSocket of onlineSocketsInChat) {
+            for (const userSocket of socketsInChat) {
                 userSocket.emit("chatParticipantAdd", { chatParticipant });
+                /* should this be userConnected emit instead, if so then need frontend fixes */
                 await emitOnlineUsersInUserChats(userSocket, io);
             }
 
@@ -145,31 +80,12 @@ export const initChat = (socket: Socket, io: Server): void => {
 
     socket.on("chatParticipantRemove", async ({ chatId, participantId }: { chatId: string, participantId: string }) => {
         try {
-            const rawCookie = socket.handshake.headers.cookie;
-            const cookies = cookie.parse(rawCookie || "");
-            const token = cookies.auth_token;
+            const socketsInChat = await io.in(chatId).fetchSockets();
+            const participantSocket = socketsInChat.find((socket) => { return socket.userId === participantId });
 
-            if (!token) {
-                socket.emit("error");
-                return;
-            }
+            if (participantSocket) { participantSocket.leave(chatId); }
 
-            const user = await getUserFromJWTService(token);
-            const chatParticipant = await getUserFromIdService(participantId);
-            const chat = await getChatFromIdService(chatId);
-
-            if (!user || !chat || !chatParticipant) {
-                socket.emit("error");
-                return;
-            }
-
-            if (participantId !== user.id) {
-                const sockets = await io.fetchSockets();
-                const participantSocket = sockets.find((userSocket) => { return userSocket.userId === chatParticipant.id; });
-                if (participantSocket && participantSocket.selectedChat !== chat.id) { participantSocket.emit("chatParticipantRemove", { userId: chatParticipant.id, chatId: chat.id }); }
-            }
-
-            socket.nsp.in(chatId).emit("chatParticipantRemove", { userId: chatParticipant.id, chatId: chat.id });
+            io.to(chatId).emit("chatParticipantRemove", { participantId, chatId });
         } catch {
             socket.emit("error");
         }

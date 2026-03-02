@@ -1,6 +1,6 @@
 import { getUserFromJWTService } from "../services/userServices.js";
 import { validateCreateMessageParams, validateGetChatMessagesParams, validateDeleteAllUserMessagesFromChatParams, validateDeleteUserMessageParams } from "../utils/validation/messageValidation.js";
-import { getChatFromIdService, getUserIsChatParticipantService } from "../services/chatServices.js";
+import { getChatFromIdService, getUserIsChatParticipantService, updateChatLastOpenedByUserService } from "../services/chatServices.js";
 import { createMessageService, deleteAllUserMessagesFromChatService, deleteUserMessageService, getMessageFromIdService, getMessagesFromChatService } from "../services/messageServices.js";
 import { Request, Response } from "express";
 
@@ -37,6 +37,7 @@ export const createMessageController = async (request: Request<object, object, {
         }
 
         const messageToSend = await createMessageService(user.id, chat.id, message);
+        await updateChatLastOpenedByUserService(user.id, chat.id);
 
         response.status(201).json(messageToSend);
 

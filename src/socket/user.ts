@@ -1,46 +1,26 @@
 import { RemoteSocket, Server, Socket } from "socket.io";
-import { getChatWithParticipantIdsFromIdService, getUserChatsService } from "../services/chatServices.js";
-import { getUserFromJWTService } from "../services/userServices.js";
-import cookie from "cookie";
+import { verifySocketUserAndReturnUser } from "../utils/socket_helpers/verifySocketUserAndReturnUser.js";
+import { emitToAllUniqueOnlineSocketsInUserRooms } from "../utils/socket_helpers/emitFunctions.js";
+import { getAllUniqueUserIdsInUserRooms } from "../utils/socket_helpers/getSocketFunctions.js";
+import { getChatWithParticipantIdsFromIdService } from "../services/chatServices.js";
 
 interface EmitEvents {
     error(): void;
-    emptySelectedChat(): void;
     onlineUsers(userIds: string[]): void; // eslint-disable-line no-unused-vars
 }
 
 export const emitOnlineUsersInUserChats = async (socket: Socket<object, EmitEvents> | RemoteSocket<EmitEvents, object>, io: Server): Promise<void> => {
     try {
-        const rawCookie = socket.handshake.headers.cookie;
-        const cookies = cookie.parse(rawCookie || "");
-        const token = cookies.auth_token;
-
-        if (typeof token !== "string" || token.length === 0) {
-            socket.emit("error");
-            return;
-        }
-
-        const user = await getUserFromJWTService(token);
+        const user = await verifySocketUserAndReturnUser(socket)
 
         if (!user) {
-            socket.emit("error");
+            socket.emit("error")
             return;
         }
 
-        const userChats = await getUserChatsService(user.id);
-        const uniqueParticipantsInUserChats = [...new Set(userChats.map((userChat) => {
-            return userChat.chatParticipants.map((participant) => { return participant.id; });
-        }).flat())];
+        const uniqueUserIdsInUserRooms = await getAllUniqueUserIdsInUserRooms(user.id, io)
 
-        const sockets = await io.fetchSockets();
-
-        const onlineSocketsInUserChats = sockets.filter((userSocket) => {
-            return uniqueParticipantsInUserChats.includes(userSocket.userId);
-        });
-
-        socket.emit("onlineUsers", onlineSocketsInUserChats.map(socket => {
-            return socket.userId;
-        }));
+        await emitToAllUniqueOnlineSocketsInUserRooms(uniqueUserIdsInUserRooms, "onlineUsers", io, user)
 
     } catch {
         socket.emit("error");
@@ -49,35 +29,14 @@ export const emitOnlineUsersInUserChats = async (socket: Socket<object, EmitEven
 
 export const emitUserDisconnected = async (socket: Socket, io: Server): Promise<void> => {
     try {
-        const rawCookie = socket.handshake.headers.cookie;
-        const cookies = cookie.parse(rawCookie || "");
-        const token = cookies.auth_token;
+        const user = await verifySocketUserAndReturnUser(socket)
 
-        if (typeof token !== "string" || token.length === 0) {
-            socket.emit("error");
-            return;
-        }
-
-        const user = await getUserFromJWTService(token);
         if (!user) {
-            socket.emit("error");
+            socket.emit("error")
             return;
         }
 
-        const userChats = await getUserChatsService(user.id);
-        const uniqueParticipantsInUserChats = [...new Set(userChats.map((userChat) => {
-            return userChat.chatParticipants.map((participant) => { return participant.id; });
-        }).flat())];
-
-        const sockets = await io.fetchSockets();
-
-        const onlineSocketsInUserChats = sockets.filter((userSocket) => {
-            return uniqueParticipantsInUserChats.includes(userSocket.userId);
-        });
-
-        onlineSocketsInUserChats.forEach((userSocket) => {
-            userSocket.emit("userDisconnected");
-        });
+        await emitToAllUniqueOnlineSocketsInUserRooms(user.id, "userDisconnected", io, user)
 
     } catch {
         socket.emit("error");
@@ -86,36 +45,13 @@ export const emitUserDisconnected = async (socket: Socket, io: Server): Promise<
 
 export const emitUserConnected = async (socket: Socket, io: Server): Promise<void> => {
     try {
-        const rawCookie = socket.handshake.headers.cookie;
-        const cookies = cookie.parse(rawCookie || "");
-        const token = cookies.auth_token;
-
-        if (typeof token !== "string" || token.length === 0) {
-            socket.emit("error");
-            return;
-        }
-
-        const user = await getUserFromJWTService(token);
+        const user = await verifySocketUserAndReturnUser(socket)
 
         if (!user) {
-            socket.emit("error");
+            socket.emit("error")
             return;
         }
-
-        const userChats = await getUserChatsService(user.id);
-        const uniqueParticipantsInUserChats = [...new Set(userChats.map((userChat) => {
-            return userChat.chatParticipants.map((participant) => { return participant.id; });
-        }).flat())];
-
-        const sockets = await io.fetchSockets();
-
-        const onlineSocketsInUserChats = sockets.filter((userSocket) => {
-            return uniqueParticipantsInUserChats.includes(userSocket.userId);
-        });
-
-        onlineSocketsInUserChats.forEach((userSocket) => {
-            userSocket.emit("userConnected");
-        });
+        await emitToAllUniqueOnlineSocketsInUserRooms(user.id, "userConnected", io, user)
 
     } catch {
         socket.emit("error");
@@ -130,7 +66,6 @@ export const initUser = (socket: Socket, io: Server): void => {
     socket.on("userDelete", async ({ userChatIds }: { userChatIds: string[] }) => {
         try {
             let userChats = await Promise.all(
-                /* eslint-disable-next-line @typescript-eslint/promise-function-async, arrow-body-style*/
                 userChatIds.map((chatId) => getChatWithParticipantIdsFromIdService(chatId))
             );
 
