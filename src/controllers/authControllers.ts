@@ -57,12 +57,7 @@ export const loginController = async (request: Request<object, object, { usernam
       return;
     }
 
-    if (typeof env_vars.TOKEN_SECRET !== "string" || env_vars.TOKEN_SECRET.length === 0) {
-      response.status(500).send("Something went wrong! Try again later.");
-      return;
-    }
-
-    const token = jwt.sign({ id: user.id }, env_vars.TOKEN_SECRET);
+    const token = jwt.sign({ id: user.id }, env_vars.TOKEN_SECRET, { algorithm: 'HS256', expiresIn: '24h' });
 
     response
       .cookie("auth_token", token, {
@@ -89,11 +84,6 @@ export const verifyLoginController = (request: Request, response: Response): voi
     }
 
     try {
-      if (typeof env_vars.TOKEN_SECRET !== "string" || env_vars.TOKEN_SECRET.length === 0) {
-        response.status(500).send("Something went wrong! Try again later.");
-        return;
-      }
-
       jwt.verify(token, env_vars.TOKEN_SECRET, { algorithms: ['HS256'] });
       response.status(200).send("Verified login!");
     } catch (error) {

@@ -1,11 +1,10 @@
 import db from "../database/db.js";
 import jwt from "jsonwebtoken";
 import { deleteChatService, getChatsCreatedByUserService } from "./chatServices.js";
-import { UserModel, UserModelWithIdAndUsername } from "../types.js";
+import { UserModel, UserIdAndUsername } from "../types.js";
 import env_vars from "../config/environment_variables.js";
 
-export const getUserFromJWTService = async (token: string): Promise<UserModelWithIdAndUsername | null> => {
-    if (typeof env_vars.TOKEN_SECRET !== "string" || env_vars.TOKEN_SECRET.length === 0) { return null; }
+export const getUserFromJWTService = async (token: string): Promise<UserModel | null> => {
 
     const decodedJWT = jwt.verify(token, env_vars.TOKEN_SECRET, { algorithms: ['HS256'] });
 
@@ -15,13 +14,18 @@ export const getUserFromJWTService = async (token: string): Promise<UserModelWit
     return user;
 };
 
-export const getUserFromUsernameService = async (username: string): Promise<UserModelWithIdAndUsername | null> => {
+export const getUserFromUsernameService = async (username: string): Promise<UserModel | null> => {
     const user = await db.users.findOne({ where: { username }, attributes: ["id", "username"] });
     return user;
 };
 
-export const getUserFromIdService = async (id: string): Promise<UserModelWithIdAndUsername | null> => {
+export const getUserFromIdService = async (id: string): Promise<UserModel | null> => {
     const user = await db.users.findOne({ where: { id }, attributes: ["id", "username"] });
+    return user;
+};
+
+export const getUserInfoFromIdService = async (id: string): Promise<UserIdAndUsername | null> => {
+    const user = await db.users.findOne({ where: { id }, attributes: ["id", "username"], raw: true });
     return user;
 };
 

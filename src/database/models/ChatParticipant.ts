@@ -9,9 +9,8 @@ const ChatParticipant = (sequelize: Sequelize): ModelStatic<ChatParticipantModel
             unique: true,
             primaryKey: true
         },
-        /* lastOpened is kind of bad name because its not updated just when opening so rename */
         lastOpened: {
-            type: DataTypes.STRING,
+            type: DataTypes.DATE,
             allowNull: true
         },
         userId: {

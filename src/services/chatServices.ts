@@ -19,7 +19,7 @@ export const createGroupChatService = async (user: UserModel, chatName: string):
     return chat.id;
 };
 
-//this is wrong return type. it doesnt include chatparticipants. or should it???
+
 export const getPrivateChatBetweenUsersService = async (userId: string, userId2: string): Promise<InstanceType<typeof db.chats> | null> => {
     const chat = await db.chats.findOne({
         include: {
@@ -94,11 +94,10 @@ export const getIdsFromUserChatsService = async (userId: string): Promise<string
                 attributes: []
             },
         ],
-        attributes: ["id"], // fetch only the chat id
+        attributes: ["id"],
         raw: true
     });
 
-    // chats is now an array of { id: ... }, so map to strings
     return chats.map((chat) => { return String(chat.id) });
 };
 
@@ -152,7 +151,7 @@ export const getAllUnreadMessagesAmountForUserChatsService = async (
     return results as { chatId: string; amount: number }[];
 };
 
-export const getChatLastOpenedByUserService = async (chatId: string, userId: string): Promise<string | null> => {
+export const getChatLastOpenedByUserService = async (chatId: string, userId: string): Promise<Date | null> => {
     const chatParticipant = await db.chatParticipants.findOne({
         where: { chatId, userId },
         attributes: ["lastOpened"]
@@ -165,7 +164,7 @@ export const updateChatLastOpenedByUserService = async (userId: string, chatId: 
     const chatParticipant = await getChatParticipantService(userId, chatId);
 
     if (chatParticipant) {
-        await chatParticipant.update({ lastOpened: new Date().toISOString() });
+        await chatParticipant.update({ lastOpened: new Date() });
     }
 };
 
@@ -193,6 +192,7 @@ export const getChatWithParticipantIdsFromIdService = async (
         id: String(chat.id),
         chatName: chat.chatName ?? null,
         isGroup: chat.isGroup,
+        creatorId: chat.creatorId,
         chatParticipants: chat.chatParticipants?.map((cp) => {
             return {
                 id: String(cp.id),

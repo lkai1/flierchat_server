@@ -6,14 +6,12 @@ import { Request, Response } from "express";
 
 export const createMessageController = async (request: Request<object, object, { chatId: string, message: string }>, response: Response): Promise<void> => {
     try {
-
         if (!validateCreateMessageParams(request.body)) {
             response.status(400).send("Invalid parameters!");
             return;
         }
 
         const { chatId, message } = request.body;
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const token = request.cookies.auth_token;
 
         if (typeof token !== "string" || token.length === 0) {
@@ -47,16 +45,20 @@ export const createMessageController = async (request: Request<object, object, {
     }
 };
 
-export const getChatMessagesController = async (request: Request<object, object, object, { chatId: string }>, response: Response): Promise<void> => {
+export const getChatMessagesController = async (
+    request: Request<object, object, object, { chatId: string, limit?: string, offset?: string }>,
+    response: Response
+): Promise<void> => {
     try {
-
         if (!validateGetChatMessagesParams(request.query)) {
             response.status(400).send("Invalid parameters!");
             return;
         }
 
-        const { chatId } = request.query;
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const { chatId, limit: limitStr, offset: offsetStr } = request.query;
+        const limit = limitStr ? Math.min(parseInt(limitStr), 100) : 50;
+        const offset = offsetStr ? Math.max(parseInt(offsetStr), 0) : 0;
+
         const token = request.cookies.auth_token;
 
         if (typeof token !== "string" || token.length === 0) {
@@ -79,9 +81,9 @@ export const getChatMessagesController = async (request: Request<object, object,
             return;
         }
 
-        const messages = await getMessagesFromChatService(chat);
+        const result = await getMessagesFromChatService(chat, limit, offset);
 
-        response.status(200).json(messages);
+        response.status(200).json(result);
 
     } catch (error) {
         console.error("Error in getChatMessagesController", error);
@@ -91,13 +93,11 @@ export const getChatMessagesController = async (request: Request<object, object,
 
 export const deleteAllUserMessagesFromChatController = async (request: Request<object, object, { chatId: string }>, response: Response): Promise<void> => {
     try {
-
         if (!validateDeleteAllUserMessagesFromChatParams(request.body)) {
             response.status(400).send("Invalid parameters!");
             return;
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const token = request.cookies.auth_token;
         const { chatId } = request.body;
 
@@ -133,13 +133,11 @@ export const deleteAllUserMessagesFromChatController = async (request: Request<o
 
 export const deleteUserMessageController = async (request: Request<object, object, { messageId: string }>, response: Response): Promise<void> => {
     try {
-
         if (!validateDeleteUserMessageParams(request.body)) {
             response.status(400).send("Invalid parameters!");
             return;
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const token = request.cookies.auth_token;
         const { messageId } = request.body;
 

@@ -4,7 +4,6 @@ import { deleteUserService, getUserFromJWTService } from "../services/userServic
 export const getUserInfoFromJWTController = async (request: Request, response: Response): Promise<void> => {
     try {
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const token = request.cookies.auth_token;
 
         if (typeof token !== "string" || token.length === 0) {
@@ -35,7 +34,6 @@ export const getUserInfoFromJWTController = async (request: Request, response: R
 export const deleteUserController = async (request: Request, response: Response): Promise<void> => {
     try {
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const token = request.cookies.auth_token;
 
         if (typeof token !== "string" || token.length === 0) {
@@ -52,7 +50,14 @@ export const deleteUserController = async (request: Request, response: Response)
 
         await deleteUserService(user.id);
 
-        response.status(200).send("User deleted.");
+        response
+            .clearCookie('auth_token', {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            })
+            .status(200)
+            .send("User deleted.");
 
     } catch (error) {
         console.error("Error in deleteUserController", error);

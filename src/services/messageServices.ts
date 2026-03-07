@@ -1,32 +1,40 @@
 import db from "../database/db.js";
 import { ChatModel, MessageModel, MessageWithCreator } from "../types.js";
 
+const MESSAGES_PAGE_SIZE = 50;
+
 export const createMessageService = async (creatorId: string, chatId: string, value: string): Promise<MessageModel> => {
     const message = await db.messages.create({
         creatorId,
         chatId,
         value,
-        timestamp: new Date().toISOString()
+        timestamp: new Date()
     });
 
     return message;
 };
 
 export const getMessagesFromChatService = async (
-    chat: ChatModel
-): Promise<MessageWithCreator[]> => {
-    const messages = await db.messages.findAll({
+    chat: ChatModel,
+    limit: number = MESSAGES_PAGE_SIZE,
+    offset: number = 0
+): Promise<{ messages: MessageWithCreator[], total: number }> => {
+    const { count, rows } = await db.messages.findAndCountAll({
         where: { chatId: chat.id },
-        attributes: ["id", "value", "timestamp", "chatId"],
+        attributes: ["id", "value", "timestamp", "chatId", "creatorId"],
         include: {
             model: db.users,
             as: "messageCreator",
             attributes: ["id", "username"],
         },
-        order: [["timestamp", "ASC"]],
+
+        order: [["timestamp", "DESC"]],
+        limit,
+        offset,
     });
 
-    return messages.map((message) => {
+
+    const messages = rows.reverse().map((message) => {
         return {
             id: message.id,
             value: message.value,
@@ -39,9 +47,9 @@ export const getMessagesFromChatService = async (
             },
         };
     });
+
+    return { messages, total: count };
 };
-
-
 
 export const getMessageFromIdService = async (messageId: string): Promise<MessageModel | null> => {
     const message = await db.messages.findOne({ where: { id: messageId } });

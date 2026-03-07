@@ -4,7 +4,6 @@ import {
     validateAddGroupChatParticipantParams,
     validateRemoveChatParticipantParams,
     validateDeleteChatParams,
-    validateGetUnreadMessagesInChatParams,
     validateUpdateUnreadMessagesInChatParams
 } from "../utils/validation/chatValidation.js";
 import {
@@ -19,7 +18,6 @@ import {
     addGroupChatParticipantService,
     deleteChatService,
     removeChatParticipantService,
-    /* getChatLastOpenedByUserService, */
     updateChatLastOpenedByUserService,
     getAllUnreadMessagesAmountForUserChatsService
 } from "../services/chatServices.js";
@@ -350,7 +348,7 @@ export const updateUnreadMessagesInChatController = async (request: Request<obje
             response.status(403).send("User is not chat participant!");
             return;
         }
-        console.log("clearUnread ", user.id)
+
         await updateChatLastOpenedByUserService(user.id, chat.id);
         response.status(200).send("Unread messages updated.");
 

@@ -10,7 +10,6 @@ export interface ChatWithParticipants {
     id: string;
     chatName: string | null;
     isGroup: boolean;
-    /* make sure that this creatorId should actually exist and in this way */
     creatorId: string;
     chatParticipants: {
         id: string;
@@ -22,6 +21,7 @@ export interface ChatWithParticipantIds {
     id: string;
     chatName: string | null;
     isGroup: boolean;
+    creatorId: string;
     chatParticipants: {
         id: string;
     }[];
@@ -29,20 +29,18 @@ export interface ChatWithParticipantIds {
 
 export interface ChatParticipantAttributes {
     id: string;
-    lastOpened: string | null;
+    lastOpened: Date | null;
     userId: string;
     chatId: string;
 }
 
 export interface ChatParticipantCreationAttributes {
-    lastOpened?: string;
+    lastOpened?: Date;
 }
 
-export interface UserModelWithIdAndUsername extends Model<InferAttributes<UserModel>, InferCreationAttributes<UserModel>> {
-    id: CreationOptional<string>;
+export interface UserIdAndUsername {
+    id: string;
     username: string;
-    hash: string;
-    createUserChat(params: ChatCreationAttributes): Promise<ChatModel>;
 }
 
 export interface UserModel extends Model<InferAttributes<UserModel>, InferCreationAttributes<UserModel>> {
@@ -65,7 +63,7 @@ export interface ChatModel extends Model<InferAttributes<ChatModel>, InferCreati
 
 export interface ChatParticipantModel extends Model<InferAttributes<ChatParticipantModel>, InferCreationAttributes<ChatParticipantModel>> {
     id: CreationOptional<string>;
-    lastOpened: string | null;
+    lastOpened: Date | null;
     userId: string;
     chatId: string;
 }
@@ -73,7 +71,7 @@ export interface ChatParticipantModel extends Model<InferAttributes<ChatParticip
 export interface MessageModel extends Model<InferAttributes<MessageModel>, InferCreationAttributes<MessageModel>> {
     id: CreationOptional<string>;
     value: string;
-    timestamp: string;
+    timestamp: Date;
     creatorId: string;
     chatId: string;
     messageCreator?: {
@@ -85,7 +83,7 @@ export interface MessageModel extends Model<InferAttributes<MessageModel>, Infer
 export interface MessageWithCreator {
     id: string;
     value: string;
-    timestamp: string;
+    timestamp: Date;
     chatId: string;
     creatorId: string;
     messageCreator: {

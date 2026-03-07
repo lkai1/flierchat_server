@@ -1,22 +1,15 @@
 import { Socket } from "socket.io";
 import { getChatFromIdService, getUserIsChatParticipantService } from "../services/chatServices.js";
-import { getUserFromJWTService } from "../services/userServices.js";
+import { getUserInfoFromIdService } from "../services/userServices.js";
 import { MessageModel } from "../types.js";
-import cookie from "cookie"
 
 export const initMessage = (socket: Socket): void => {
     socket.on("message", async ({ message, chatId }: { message: MessageModel, chatId: string }) => {
         try {
-            const rawCookie = socket.handshake.headers.cookie;
-            const cookies = cookie.parse(rawCookie || "");
-            const token = cookies.auth_token;
-            if (typeof token !== "string" || token.length === 0) {
-                socket.emit("error");
-                return;
-            }
-
-            const user = await getUserFromJWTService(token);
-            const chat = await getChatFromIdService(chatId);
+            const [user, chat] = await Promise.all([
+                getUserInfoFromIdService(socket.userId),
+                getChatFromIdService(chatId)
+            ]);
 
             if (!user || !chat) {
                 socket.emit("error");
@@ -25,24 +18,31 @@ export const initMessage = (socket: Socket): void => {
 
             const userIsChatParticipant = await getUserIsChatParticipantService(user.id, chat.id);
 
-            if (userIsChatParticipant) {
-                const updatedMessage = {
-                    ...message,
-                    messageCreator: { username: user.username, id: user.id }
-                };
-                // eslint-disable-next-line no-unused-vars
-                const { creatorId, ...messageToSend } = updatedMessage;
-                socket.nsp.in(chatId).emit("message", messageToSend);
-            } else {
+            if (!userIsChatParticipant) {
                 socket.emit("error");
+                return;
             }
+
+            const updatedMessage = {
+                ...message,
+                messageCreator: { username: user.username, id: user.id }
+            };
+            const { creatorId, ...messageToSend } = updatedMessage;
+            socket.nsp.in(chatId).emit("message", messageToSend);
         } catch {
             socket.emit("error");
         }
     });
 
-    socket.on("messageDelete", ({ messageId, chatId }: { messageId: string, chatId: string }): void => {
+    socket.on("messageDelete", async ({ messageId, chatId }: { messageId: string, chatId: string }): Promise<void> => {
         try {
+            const userIsChatParticipant = await getUserIsChatParticipantService(socket.userId, chatId);
+
+            if (!userIsChatParticipant) {
+                socket.emit("error");
+                return;
+            }
+
             socket.nsp.in(chatId).emit("messageDelete", messageId);
         } catch {
             socket.emit("error");
@@ -51,23 +51,14 @@ export const initMessage = (socket: Socket): void => {
 
     socket.on("messageDeleteAll", async ({ chatId }: { chatId: string }) => {
         try {
-            const rawCookie = socket.handshake.headers.cookie;
-            const cookies = cookie.parse(rawCookie || "");
-            const token = cookies.auth_token;
+            const userIsChatParticipant = await getUserIsChatParticipantService(socket.userId, chatId);
 
-            if (typeof token !== "string" || token.length === 0) {
+            if (!userIsChatParticipant) {
                 socket.emit("error");
                 return;
             }
 
-            const user = await getUserFromJWTService(token);
-
-            if (!user) {
-                socket.emit("error");
-                return;
-            }
-
-            socket.nsp.in(chatId).emit("messageDeleteAll", { userId: user.id });
+            socket.nsp.in(chatId).emit("messageDeleteAll", { userId: socket.userId });
         } catch {
             socket.emit("error");
         }

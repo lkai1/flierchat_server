@@ -1,7 +1,7 @@
 import { Server } from "socket.io";
 import { getIdsFromUserChatsService } from "../../services/chatServices.js";
 
-export const getAllUniqueSocketIdsInUserRooms = async (userId: string, io: Server) => {
+export const getAllUniqueSocketIdsInUserRooms = async (userId: string, io: Server): Promise<string[]> => {
 
     const roomIds = await getIdsFromUserChatsService(userId)
     if (!roomIds.length) return []
@@ -19,7 +19,7 @@ export const getAllUniqueSocketIdsInUserRooms = async (userId: string, io: Serve
     return [...uniqueUserIds]
 }
 
-export const getAllUniqueUserIdsInUserRooms = async (userId: string, io: Server) => {
+export const getAllUniqueUserIdsInUserRooms = async (userId: string, io: Server): Promise<string[]> => {
     const roomIds = await getIdsFromUserChatsService(userId)
     if (!roomIds.length) return []
 

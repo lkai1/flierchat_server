@@ -1,8 +1,8 @@
 import { Server } from "socket.io";
-import { UserModelWithIdAndUsername } from "../../types.js";
+import { UserIdAndUsername } from "../../types.js";
 import { getAllUniqueSocketIdsInUserRooms } from "./getSocketFunctions.js";
 
-export const emitToAllUniqueOnlineSocketsInUserRooms = async (value: any, emitType: string, io: Server, user: UserModelWithIdAndUsername) => {
+export const emitToAllUniqueOnlineSocketsInUserRooms = async (value: any, emitType: string, io: Server, user: UserIdAndUsername) => {
     const uniqueSocketIdsInUserRooms = await getAllUniqueSocketIdsInUserRooms(user.id, io)
 
     uniqueSocketIdsInUserRooms.forEach((id) => {
