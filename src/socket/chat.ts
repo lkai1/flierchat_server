@@ -24,6 +24,7 @@ export const initChat = (socket: Socket, io: Server): void => {
             for (const userSocket of participantSockets) {
                 userSocket.join(chatId);
                 userSocket.emit("chatCreate");
+                await emitOnlineUsersInUserChats(userSocket, io);
             }
 
         } catch {

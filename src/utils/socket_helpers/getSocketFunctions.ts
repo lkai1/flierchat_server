@@ -21,7 +21,7 @@ export const getAllUniqueSocketIdsInUserRooms = async (userId: string, io: Serve
 
 export const getAllUniqueUserIdsInUserRooms = async (userId: string, io: Server): Promise<string[]> => {
     const roomIds = await getIdsFromUserChatsService(userId)
-    if (!roomIds.length) return [userId]
+    if (!roomIds.length) return []
 
     const sockets = await io.in(roomIds).fetchSockets()
 
